@@ -4,10 +4,10 @@ public class UrlStatsResponse {
     private long total;
     private long malicious;
 
-    // Construtor padrão (necessário para Spring)
+   
     public UrlStatsResponse() {}
 
-    // Adicione este construtor!
+    
     public UrlStatsResponse(long total, long malicious) {
         this.total = total;
         this.malicious = malicious;

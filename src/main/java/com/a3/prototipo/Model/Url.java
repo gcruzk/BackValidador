@@ -23,7 +23,7 @@ public class Url {
         this.isMalicious = isMalicious;
     }
 
-    // Getters e Setters
+    
     public Long getId() {
         return id;
     }public void setId(Long id) {
