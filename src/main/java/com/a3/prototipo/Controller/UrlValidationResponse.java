@@ -7,6 +7,9 @@ public class UrlValidationResponse {
     private Double confidence;
     private String riskLevel;
     
+    // Construtor padrão (IMPORTANTE)
+    public UrlValidationResponse() {}
+    
     public UrlValidationResponse(boolean isMalicious, String message, String details, Double confidence) {
         this.isMalicious = isMalicious;
         this.message = message;

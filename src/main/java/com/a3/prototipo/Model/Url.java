@@ -1,9 +1,5 @@
 package com.a3.prototipo.Model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -14,20 +10,31 @@ public class Url {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @Column(nullable = false)
+    @Column(nullable = false, length = 1000)
     private String url;
     
     private Boolean isMalicious;
+    
+    @Column(length = 50)
     private String riskLevel;
+    
     private Double confidence;
+    
+    @Column(length = 500)
     private String details;
     
     // Campos para usuário (se logado)
+    @Column(length = 255)
     private String userEmail;
     
     // Campos para Gemini
+    @Column(length = 100)
     private String category;
+    
+    @Column(length = 1000)
     private String summary;
+    
+    @Column(length = 500)
     private String keywords;
     
     private LocalDateTime validatedAt = LocalDateTime.now();
