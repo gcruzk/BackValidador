@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 @Table(name = "urls")
 public class Url {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // ✅ Estratégia correta para PostgreSQL
     private Long id;
     
     @Column(nullable = false, length = 1000)
