@@ -1,7 +1,15 @@
 package com.a3.prototipo.Controller;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+
 public class LoginRequest {
+    
+    @Email(message = "Email deve ser válido")
+    @NotBlank(message = "Email é obrigatório")
     private String email;
+    
+    @NotBlank(message = "Password é obrigatório")
     private String password;
     
     // Construtores

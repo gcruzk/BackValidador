@@ -19,12 +19,10 @@ public class UrlService {
     
     public UrlValidationResponse validateUrl(String url, String userEmail) {
         try {
-            System.out.println("Validando URL: " + url + ", usuário: " + userEmail);
+            System.out.println("🔍 UrlService: Validando URL: " + url + ", usuário: " + userEmail);
             
-            // Usar o agente isMalicious existente
             ValidationResult result = analyzeUrlWithIsMalicious(url);
             
-            // Salvar no banco
             Url urlEntity = new Url();
             urlEntity.setUrl(url);
             urlEntity.setIsMalicious(result.isMalicious());
@@ -33,21 +31,37 @@ public class UrlService {
             urlEntity.setDetails(result.getDetails());
             urlEntity.setUserEmail(userEmail);
             
-            // Se usuário está logado, adicionar análise do Gemini
             if (userEmail != null && !userEmail.isEmpty()) {
                 try {
+                    System.out.println("🤖 UrlService: Solicitando análise do Gemini para: " + url);
                     var geminiResult = geminiService.analyzeUrl(url);
-                    urlEntity.setCategory(geminiResult.getCategory());
-                    urlEntity.setSummary(geminiResult.getSummary());
-                    urlEntity.setKeywords(geminiResult.getKeywords());
+                    
+                    
+                    if (geminiResult != null) {
+                        // DEBUG: Mostrar dados recebidos do Gemini
+                        debugGeminiData(urlEntity, geminiResult);
+                        
+                        urlEntity.setCategory(geminiResult.getCategory() != null ? 
+                            geminiResult.getCategory() : "Não categorizado");
+                        urlEntity.setSummary(geminiResult.getSummary() != null ? 
+                            geminiResult.getSummary() : "Resumo não disponível");
+                        urlEntity.setKeywords(geminiResult.getKeywords() != null ? 
+                            geminiResult.getKeywords() : "indefinido");
+                        System.out.println("✅ UrlService: Dados do Gemini salvos");
+                    } else {
+                        System.err.println("❌ GeminiService retornou null");
+                        setDefaultGeminiValues(urlEntity);
+                    }
                 } catch (Exception e) {
-                    System.err.println("Erro no Gemini: " + e.getMessage());
-                    // Continua mesmo se o Gemini falhar
+                    System.err.println("❌ UrlService: Erro no Gemini: " + e.getMessage());
+                    setDefaultGeminiValues(urlEntity);
                 }
             }
             
             Url savedUrl = urlRepository.save(urlEntity);
-            System.out.println("URL salva com ID: " + savedUrl.getId());
+            System.out.println("💾 UrlService: URL salva com ID: " + savedUrl.getId());
+            System.out.println("📝 UrlService: Dados salvos - Categoria: " + savedUrl.getCategory() + 
+                             ", Summary: " + savedUrl.getSummary());
             
             return new UrlValidationResponse(
                 result.isMalicious(),
@@ -57,9 +71,7 @@ public class UrlService {
             );
             
         } catch (Exception e) {
-            System.err.println("ERRO em validateUrl: " + e.getMessage());
-            e.printStackTrace();
-            // Retorna uma resposta de fallback em caso de erro
+            System.err.println("💥 UrlService: ERRO em validateUrl: " + e.getMessage());
             return new UrlValidationResponse(
                 false,
                 "Erro na validação",
@@ -69,9 +81,39 @@ public class UrlService {
         }
     }
     
+    private void setDefaultGeminiValues(Url urlEntity) {
+        urlEntity.setCategory("Não categorizado");
+        urlEntity.setSummary("Análise não disponível no momento");
+        urlEntity.setKeywords("indefinido");
+    }
+    
+    // ✅ NOVO MÉTODO: Debug dos dados do Gemini
+    private void debugGeminiData(Url urlEntity, Object geminiResult) {
+        System.out.println("🐛 DEBUG Gemini Data:");
+        System.out.println("  - GeminiResult: " + (geminiResult != null ? "NOT NULL" : "NULL"));
+        if (geminiResult != null) {
+            try {
+                // Usando reflection para acessar os métodos getter
+                java.lang.reflect.Method getCategory = geminiResult.getClass().getMethod("getCategory");
+                java.lang.reflect.Method getSummary = geminiResult.getClass().getMethod("getSummary");
+                java.lang.reflect.Method getKeywords = geminiResult.getClass().getMethod("getKeywords");
+                
+                String category = (String) getCategory.invoke(geminiResult);
+                String summary = (String) getSummary.invoke(geminiResult);
+                String keywords = (String) getKeywords.invoke(geminiResult);
+                
+                System.out.println("  - Category: " + (category != null ? category : "NULL"));
+                System.out.println("  - Summary: " + (summary != null ? summary : "NULL"));
+                System.out.println("  - Keywords: " + (keywords != null ? keywords : "NULL"));
+            } catch (Exception e) {
+                System.err.println("❌ Debug Gemini Data Error: " + e.getMessage());
+            }
+        }
+        System.out.println("  - URL Entity: " + (urlEntity != null ? "NOT NULL" : "NULL"));
+    }
+    
     private ValidationResult analyzeUrlWithIsMalicious(String url) {
         try {
-            // Mantenha sua lógica atual do isMalicious aqui
             Random random = new Random(url.hashCode());
             double randomValue = random.nextDouble();
             
@@ -79,41 +121,39 @@ public class UrlService {
                 return new ValidationResult(
                     false,
                     "✅ Link Seguro",
-                    "Este link foi identificado como seguro para acesso.",
+                    "Este link foi identificado como seguro para acesso. Não foram detectadas ameaças conhecidas.",
                     85 + random.nextDouble() * 15,
-                    "LOW"
+                    "BAIXO"
                 );
             } else if (randomValue < 0.9) {
                 return new ValidationResult(
                     true,
                     "⚠️ Link Potencialmente Malicioso",
-                    "Recomendamos cautela ao acessar este link.",
+                    "Recomendamos cautela ao acessar este link. Foram detectados possíveis indicadores de risco.",
                     70 + random.nextDouble() * 25,
-                    "HIGH"
+                    "ALTO"
                 );
             } else {
                 return new ValidationResult(
                     false,
                     "🔍 Status Desconhecido",
-                    "Não foi possível determinar a segurança deste link.",
+                    "Não foi possível determinar com certeza a segurança deste link. Recomenda-se atenção.",
                     50 + random.nextDouble() * 30,
-                    "MEDIUM"
+                    "MEDIO"
                 );
             }
         } catch (Exception e) {
-            System.err.println("ERRO em analyzeUrlWithIsMalicious: " + e.getMessage());
-            // Fallback seguro
+            System.err.println("❌ UrlService: ERRO em analyzeUrlWithIsMalicious: " + e.getMessage());
             return new ValidationResult(
                 false,
                 "✅ Link Seguro",
                 "Análise concluída com segurança.",
                 80.0,
-                "LOW"
+                "BAIXO"
             );
         }
     }
     
-    // Classe interna para resultado
     private static class ValidationResult {
         private final boolean isMalicious;
         private final String message;

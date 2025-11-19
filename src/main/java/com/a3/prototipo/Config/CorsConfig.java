@@ -11,7 +11,8 @@ public class CorsConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
             .allowedOrigins(
-                "https://front-3-2wtp.onrender.com", // REMOVIDA BARRA NO FINAL
+                "https://front-3-2wtp.onrender.com",
+                "https://backvalidador-14.onrender.com",
                 "http://localhost:8080",
                 "http://localhost:3000"
             )

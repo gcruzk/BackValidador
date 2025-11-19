@@ -37,7 +37,7 @@ public class AuthService {
     }
     
     public User register(User user) {
-        // ✅ VERIFICAR se email já existe antes de registrar
+        
         if (userRepository.existsByEmail(user.getEmail())) {
             throw new RuntimeException("Email já está em uso");
         }
