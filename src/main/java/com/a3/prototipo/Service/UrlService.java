@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Random;
+import java.util.Set;
 
 @Service
 public class UrlService {
@@ -17,9 +18,37 @@ public class UrlService {
     @Autowired
     private GeminiService geminiService;
     
+    // Conjunto de domínios de encurtadores conhecidos
+    private static final Set<String> URL_SHORTENERS = Set.of(
+        "bit.ly", "tinyurl.com", "goo.gl", "ow.ly", "t.co", 
+        "is.gd", "buff.ly", "adf.ly", "sh.st", "cutt.ly",
+        "shorturl.at", "tiny.cc", "bit.do", "mcaf.ee", "rebrand.ly",
+        "clicky.me", "soo.gd", "s2r.co", "x.co", "qr.net",
+        "v.gd", "tr.im", "post.ly", "twitthis.com", "u.to",
+        "j.mp", "b.link", "poket.me", "pic.gd", "filoops.info",
+        "ity.im", "short.to", "wp.me", "yfrog.com", "migre.me",
+        "ff.im", "tiny.ie", "url4.eu", "twurl.nl", "snipurl.com",
+        "short.ie", "vzturl.com", "qr.ae", "prettylinkpro.com",
+        "viralurl.com", "threadurl.com", "urlx.ie", "shorturl.com",
+        "url.ie", "xurl.es", "zzb.bz", "ulvis.net", "tweez.me",
+        "lc.chat", "url.fit", "virl.ws", "scrnch.me", "fumacrom.com",
+        "u.nu", "clk.sh", "ri.ms", "fur.ly", "sk.gy"
+    );
+    
     public UrlValidationResponse validateUrl(String url, String userEmail) {
         try {
             System.out.println("🔍 UrlService: Validando URL: " + url + ", usuário: " + userEmail);
+            
+            // Verificar se é um link encurtado ANTES de qualquer análise
+            if (isShortenedUrl(url)) {
+                System.out.println("🔗 UrlService: Link encurtado detectado: " + url);
+                return new UrlValidationResponse(
+                    false,
+                    "🔗 Link Encurtado Detectado",
+                    "Esta é uma URL encurtada. Para uma análise precisa, recomendamos usar o link original não encurtado. Links encurtados não podem ser analisados adequadamente quanto à segurança.",
+                    0.0
+                );
+            }
             
             ValidationResult result = analyzeUrlWithIsMalicious(url);
             
@@ -36,9 +65,7 @@ public class UrlService {
                     System.out.println("🤖 UrlService: Solicitando análise do Gemini para: " + url);
                     var geminiResult = geminiService.analyzeUrl(url);
                     
-                    
                     if (geminiResult != null) {
-                        // DEBUG: Mostrar dados recebidos do Gemini
                         debugGeminiData(urlEntity, geminiResult);
                         
                         urlEntity.setCategory(geminiResult.getCategory() != null ? 
@@ -81,19 +108,50 @@ public class UrlService {
         }
     }
     
+    // ✅ NOVO MÉTODO: Detectar links encurtados
+    private boolean isShortenedUrl(String url) {
+        try {
+            String domain = extractDomain(url);
+            System.out.println("🌐 UrlService: Domínio extraído: " + domain);
+            
+            // Verificar se o domínio está na lista de encurtadores
+            boolean isShortener = URL_SHORTENERS.stream()
+                .anyMatch(shortener -> domain.equals(shortener) || domain.endsWith("." + shortener));
+            
+            System.out.println("🔍 UrlService: É link encurtado? " + isShortener);
+            return isShortener;
+            
+        } catch (Exception e) {
+            System.err.println("❌ UrlService: Erro ao verificar link encurtado: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    // ✅ MÉTODO AUXILIAR: Extrair domínio da URL
+    private String extractDomain(String url) {
+        try {
+            // Remover protocolo e www
+            String cleanUrl = url.replaceFirst("^(https?://)?(www\\.)?", "");
+            // Pegar apenas o domínio (antes da primeira barra)
+            String domain = cleanUrl.split("/")[0].toLowerCase();
+            return domain;
+        } catch (Exception e) {
+            System.err.println("❌ UrlService: Erro ao extrair domínio: " + e.getMessage());
+            return "unknown";
+        }
+    }
+    
     private void setDefaultGeminiValues(Url urlEntity) {
         urlEntity.setCategory("Não categorizado");
         urlEntity.setSummary("Análise não disponível no momento");
         urlEntity.setKeywords("indefinido");
     }
     
-    // ✅ NOVO MÉTODO: Debug dos dados do Gemini
     private void debugGeminiData(Url urlEntity, Object geminiResult) {
         System.out.println("🐛 DEBUG Gemini Data:");
         System.out.println("  - GeminiResult: " + (geminiResult != null ? "NOT NULL" : "NULL"));
         if (geminiResult != null) {
             try {
-                // Usando reflection para acessar os métodos getter
                 java.lang.reflect.Method getCategory = geminiResult.getClass().getMethod("getCategory");
                 java.lang.reflect.Method getSummary = geminiResult.getClass().getMethod("getSummary");
                 java.lang.reflect.Method getKeywords = geminiResult.getClass().getMethod("getKeywords");
@@ -114,6 +172,7 @@ public class UrlService {
     
     private ValidationResult analyzeUrlWithIsMalicious(String url) {
         try {
+            // Se chegou aqui, não é um link encurtado (já foi verificado antes)
             Random random = new Random(url.hashCode());
             double randomValue = random.nextDouble();
             

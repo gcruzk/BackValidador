@@ -201,7 +201,7 @@ public class GeminiService {
     }
     
     private UrlAnalysis categorizeByDomain(String domain, Random random) {
-        // ✅ CORREÇÃO: Adicionadas mais categorias para melhor cobertura
+        
         if (domain.contains("google") || domain.contains("youtube") || domain.contains("gmail")) {
             return new UrlAnalysis(
                 "Tecnologia e Busca",
@@ -272,7 +272,7 @@ public class GeminiService {
             );
         }
         
-        // ✅ CORREÇÃO: Mais categorias comuns
+        
         if (domain.contains("outlook") || domain.contains("hotmail") || domain.contains("live.com")) {
             return new UrlAnalysis(
                 "Email e Comunicação",
