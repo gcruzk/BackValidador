@@ -28,11 +28,11 @@ public class GeminiService {
             boolean useRealApi = isRealApiKey(apiKey);
             
             if (useRealApi) {
-                System.out.println("🚀 GeminiService: Tentando API Gemini real");
+                System.out.println("GeminiService: Tentando API Gemini real");
                 try {
                     GeminiAnalysisResponse apiResponse = callGeminiApi(url);
                     if (apiResponse != null && !isErrorResponse(apiResponse)) {
-                        System.out.println("✅ GeminiService: Análise da API real bem-sucedida");
+                        System.out.println("GeminiService: Análise da API real bem-sucedida");
                         return apiResponse;
                     } else {
                         System.err.println("❌ GeminiService: API retornou resposta inválida, usando análise simulada");
@@ -47,7 +47,7 @@ public class GeminiService {
             
             // Análise simulada como fallback principal
             GeminiAnalysisResponse simulatedResponse = simulateGeminiAnalysis(url);
-            System.out.println("✅ GeminiService: Análise concluída - Categoria: " + simulatedResponse.getCategory());
+            System.out.println("GeminiService: Análise concluída - Categoria: " + simulatedResponse.getCategory());
             return simulatedResponse;
             
         } catch (Exception e) {
@@ -63,7 +63,7 @@ public class GeminiService {
             return false;
         }
         return !key.equals("demo") && 
-               !key.equals("AIzaSyBoN2qwmW5ZokGyorJL0qS78uo9rtGQei8") && // Remova esta linha se for sua key real
+              
                key.startsWith("AIza") && 
                key.length() > 20;
     }
@@ -141,7 +141,7 @@ public class GeminiService {
     // 
     private String extractTextFromResponse(String jsonResponse) {
         try {
-            // Extração simples do texto - adapte conforme o formato real da resposta
+            // Extração simples do texto 
             int textStart = jsonResponse.indexOf("\"text\"") + 8;
             int textEnd = jsonResponse.indexOf("\"", textStart);
             if (textStart > 0 && textEnd > textStart) {
@@ -155,7 +155,7 @@ public class GeminiService {
     
     private GeminiAnalysisResponse parseGeminiResponse(String text, String url) {
         
-        // Em uma implementação real, você parsearia o JSON corretamente
+        
         return new GeminiAnalysisResponse(
             "Análise Automática",
             text.length() > 100 ? text.substring(0, 100) + "..." : text,

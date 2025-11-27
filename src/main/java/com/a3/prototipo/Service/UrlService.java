@@ -108,7 +108,7 @@ public class UrlService {
         }
     }
     
-    // ✅ NOVO MÉTODO: Detectar links encurtados
+ 
     private boolean isShortenedUrl(String url) {
         try {
             String domain = extractDomain(url);
@@ -127,7 +127,7 @@ public class UrlService {
         }
     }
     
-    // ✅ MÉTODO AUXILIAR: Extrair domínio da URL
+    
     private String extractDomain(String url) {
         try {
             // Remover protocolo e www

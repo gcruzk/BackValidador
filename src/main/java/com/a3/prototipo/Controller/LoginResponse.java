@@ -11,7 +11,7 @@ public class LoginResponse {
         this.message = "Login realizado com sucesso";
     }
     
-    // Getters e Setters
+    
     public String getToken() { return token; }
     public void setToken(String token) { this.token = token; }
     

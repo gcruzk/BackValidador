@@ -12,7 +12,7 @@ public class LoginRequest {
     @NotBlank(message = "Password é obrigatório")
     private String password;
     
-    // Construtores
+   
     public LoginRequest() {}
     
     public LoginRequest(String email, String password) {
@@ -20,7 +20,7 @@ public class LoginRequest {
         this.password = password;
     }
     
-    // Getters e Setters
+    
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
     

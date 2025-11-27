@@ -4,7 +4,7 @@ public class UnStatsResponse {
     private Long total;
     private Long malicious;
     
-    // Construtor padrão
+    
     public UnStatsResponse() {}
     
     // Construtor com parâmetros
@@ -13,7 +13,7 @@ public class UnStatsResponse {
         this.malicious = malicious;
     }
     
-    // Getters e Setters
+    
     public Long getTotal() {
         return total;
     }

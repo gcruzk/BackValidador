@@ -7,7 +7,7 @@ public class GeminiAnalysisResponse {
     private String trustLevel;
     private String characteristics;
     
-    // Construtor atualizado com 5 parâmetros
+
     public GeminiAnalysisResponse(String category, String summary, String keywords, String trustLevel, String characteristics) {
         this.category = category;
         this.summary = summary;
@@ -16,7 +16,7 @@ public class GeminiAnalysisResponse {
         this.characteristics = characteristics;
     }
     
-    // Construtor alternativo com 3 parâmetros (para compatibilidade)
+    
     public GeminiAnalysisResponse(String category, String summary, String keywords) {
         this.category = category;
         this.summary = summary;
@@ -25,7 +25,7 @@ public class GeminiAnalysisResponse {
         this.characteristics = "N/A";
     }
     
-    // Getters e Setters
+    
     public String getCategory() { return category; }
     public void setCategory(String category) { this.category = category; }
     

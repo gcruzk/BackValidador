@@ -7,7 +7,7 @@ public class UrlValidationResponse {
     private Double confidence;
     private String riskLevel;
     
-    // Construtor padrão (IMPORTANTE)
+    
     public UrlValidationResponse() {}
     
     public UrlValidationResponse(boolean isMalicious, String message, String details, Double confidence) {
@@ -18,7 +18,7 @@ public class UrlValidationResponse {
         this.riskLevel = isMalicious ? "HIGH" : "LOW";
     }
     
-    // Getters e Setters
+    
     public boolean isMalicious() { return isMalicious; }
     public void setMalicious(boolean malicious) { isMalicious = malicious; }
     

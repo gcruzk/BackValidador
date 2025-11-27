@@ -39,7 +39,7 @@ public class Url {
     
     private LocalDateTime validatedAt = LocalDateTime.now();
     
-    // Construtores
+    
     public Url() {}
     
     public Url(String url, Boolean isMalicious, String riskLevel, Double confidence, String details) {
@@ -50,7 +50,7 @@ public class Url {
         this.details = details;
     }
     
-    // Getters e Setters
+    
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     

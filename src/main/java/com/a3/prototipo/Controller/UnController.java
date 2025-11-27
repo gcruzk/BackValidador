@@ -53,17 +53,16 @@ public class UnController {
         
             @RequestBody UrlValidationRequest request,
             @RequestHeader(value = "Authorization", required = false) String authHeader) {
-        System.out.println("🔍 VALIDATE-AUTH chamado com authHeader: " + authHeader);
+        System.out.println("VALIDATE-AUTH chamado com authHeader: " + authHeader);
         
-        System.out.println("🌐 UnController: /validate-auth chamado para URL: " + request.getUrl());
+        System.out.println("UnController: /validate-auth chamado para URL: " + request.getUrl());
         
         String userEmail = null;
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
             try {
                 userEmail = jwtService.extractUsername(token);
-                System.out.println("👤 Email extraído do token: " + userEmail);
-                System.out.println("👤 UnController: Usuário autenticado: " + userEmail);
+                System.out.println(" UnController: Usuário autenticado: " + userEmail);
             } catch (Exception e) {
                 System.err.println("❌ UnController: Erro ao extrair email do token: " + e.getMessage());
             }
@@ -78,7 +77,7 @@ public class UnController {
             fullResponse.put("maliciousAnalysis", response);
             
             try {
-                System.out.println("📊 UnController: Buscando dados completos da URL salva");
+                System.out.println("UnController: Buscando dados completos da URL salva");
                 
                 // Buscar a URL mais recente do usuário para obter dados Gemini
                 List<Url> userUrls = urlRepository.findByUserEmail(userEmail);
@@ -92,11 +91,11 @@ public class UnController {
                         latestUrl.getCategory(),
                         latestUrl.getSummary(),
                         latestUrl.getKeywords(),
-                        "N/A", // trustLevel - pode ser ajustado conforme necessidade
-                        "N/A"  // characteristics - pode ser ajustado
+                        "N/A", 
+                        "N/A" 
                     );
                     fullResponse.put("geminiAnalysis", geminiResponse);
-                    System.out.println("✅ UnController: Dados Gemini encontrados - Categoria: " + geminiResponse.getCategory());
+                    System.out.println("UnController: Dados Gemini encontrados - Categoria: " + geminiResponse.getCategory());
                 } else {
                     System.out.println("⚠️ UnController: URL salva sem dados Gemini, tentando análise direta");
                     try {
@@ -110,7 +109,7 @@ public class UnController {
                     }
                 }
                 
-                System.out.println("📤 UnController: Enviando resposta completa para usuário logado");
+                System.out.println("UnController: Enviando resposta completa para usuário logado");
                 return ResponseEntity.ok(fullResponse);
             } catch (Exception e) {
                 System.err.println("❌ UnController: Erro ao processar dados Gemini: " + e.getMessage());
